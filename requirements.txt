@@ -1,0 +1,14 @@
+# 文档管家 - 依赖包
+# 安装命令: pip install -r requirements.txt
+
+# 美化UI（可选，不安装也可运行，使用原生tkinter）
+ttkbootstrap>=1.10.1
+
+# 文档内容提取（搜索文档内容必需）
+python-docx>=0.8.11      # Word .docx
+openpyxl>=3.1.0          # Excel .xlsx / WPS .et
+PyPDF2>=3.0.0            # PDF 基础提取
+pdfplumber>=0.10.0       # PDF 增强提取（中文效果更好）
+python-pptx>=0.6.21      # PPT .pptx
+olefile>=0.46            # 旧版 .doc .wps .et
+chardet>=5.0.0           # 编码检测（增强通用提取）
