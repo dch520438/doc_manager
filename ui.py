@@ -15,6 +15,11 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from tkinter.scrolledtext import ScrolledText
+from tkinter.constants import (
+    X, Y, LEFT, RIGHT, TOP, BOTTOM, W, E, N, S, BOTH,
+    FLAT, NORMAL, DISABLED, VERTICAL, HORIZONTAL, END, CENTER,
+    NW, NE, SW, SE, RAISED, SUNKEN, GROOVE, RIDGE, SOLID, DOTBOX
+)
 
 try:
     import ttkbootstrap as tb
