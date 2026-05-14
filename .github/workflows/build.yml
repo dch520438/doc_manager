@@ -3,89 +3,78 @@ name: Build Executables
 on:
   push:
     branches: [ main ]
-    tags:
-      - 'v*'
   workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   build-windows:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
         pip install -r requirements.txt
-    
-    - name: Build with PyInstaller
-      run: pyinstaller doc_manager.spec --onefile --windowed
-    
+
+    - name: Build Windows executable
+      run: |
+        pyinstaller --onedir --windowed --name "文档管家-win" main.py
+
+    - name: Package as zip
+      run: |
+        cd dist
+        powershell -Command "Compress-Archive -Path '文档管家-win' -DestinationPath '文档管家-win.zip' -Force"
+        dir
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: doc-manager-windows
-        path: dist/文档管家.exe
+        path: dist/文档管家-win.zip
 
   build-linux:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y python3-tk python3-dev
-    
+
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
         pip install -r requirements.txt
-    
-    - name: Build with PyInstaller
+
+    - name: Build Linux executable
       run: |
-        pyinstaller doc_manager.spec --onefile --windowed --name doc-manager-linux
-        chmod +x dist/doc-manager-linux
-    
+        pyinstaller --onedir --name "文档管家-linux" main.py
+        chmod +x dist/文档管家-linux/文档管家-linux
+
+    - name: Package as zip
+      run: |
+        cd dist
+        zip -r "文档管家-linux.zip" "文档管家-linux"
+        ls -la
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: doc-manager-linux
-        path: dist/doc-manager-linux
-
-  release:
-    needs: [build-windows, build-linux]
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    steps:
-    - name: Download Windows artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: doc-manager-windows
-        path: ./release/
-    
-    - name: Download Linux artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: doc-manager-linux
-        path: ./release/
-    
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ./release/*
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        path: dist/文档管家-linux.zip
